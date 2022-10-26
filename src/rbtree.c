@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// rbtree_display: RB 트리 출력 함수
 void rbtree_display(rbtree *t, node_t *node) {
   node_t *cur_node = node;
   printf("Node [%d][%d] > ", cur_node->key, cur_node->color);
@@ -12,9 +13,11 @@ void rbtree_display(rbtree *t, node_t *node) {
   if (cur_node->right != t->nil) rbtree_display(t, cur_node->right);
 }
 
+// new_rbtree: RB 트리 구조체 생성 함수
 rbtree *new_rbtree(void) {
-  rbtree *p = (rbtree *)calloc(1, sizeof(rbtree));
   // TODO: initialize struct if needed
+  rbtree *p = (rbtree *)calloc(1, sizeof(rbtree));
+  
   node_t *new_node = (node_t *)calloc(1, sizeof(node_t)); // new_node 메모리 할당
 
   new_node->color = RBTREE_BLACK; // RBTREE_BLACK
@@ -24,6 +27,7 @@ rbtree *new_rbtree(void) {
   return p;
 }
 
+// delete_rbtree: RB 트리 구조체가 차지했던 메모리 반환 함수
 void delete_rbtree(rbtree *t) {
   // TODO: reclaim the tree nodes's memory
   node_t *p = t->root;
@@ -36,6 +40,7 @@ void delete_rbtree(rbtree *t) {
   free(t);
 }
 
+// delete_node: RB 트리의 모든 노드가 차지했던 메모리 반환 함수
 void delete_node(rbtree *t, node_t *node) {
   if (node == t->nil)
     return;
@@ -48,9 +53,9 @@ void delete_node(rbtree *t, node_t *node) {
 
   // deleting node
   free(node);
-
 }
 
+// rbtree_insert: RB 트리에 값 추가 함수
 node_t *rbtree_insert(rbtree *t, const key_t key) {
   // TODO: implement insert
   // 새로운 노드 메모리 할당하고 key값과 color 설정 해두기
@@ -81,12 +86,13 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
   new_node->color = RBTREE_RED;
   new_node->left = t->nil;
   new_node->right = t->nil;
-  // RB-INSERT-FIXUP
+  // RB-INSERT-FIXUP 함수 실행
   rbtree_insert_fixup(t, new_node);
 
   return t->root;
 }
 
+// rbtree_insert_fixup: 삽입 후 속성위반 처리 함수
 void rbtree_insert_fixup(rbtree *t, node_t *new_node) {
   node_t *uncle;
 
@@ -138,6 +144,7 @@ void rbtree_insert_fixup(rbtree *t, node_t *new_node) {
   t->root->color = RBTREE_BLACK;
 }
 
+// left_rotate: 트리 좌회전 함수
                                           // 좌회전   x      =>         y
                                           //       / |               / |
 void left_rotate(rbtree *t, node_t *x) {  //      a  y              x  c
@@ -164,6 +171,7 @@ void left_rotate(rbtree *t, node_t *x) {  //      a  y              x  c
   x->parent = y;  // x의 parent를 y로 둔다.
 }
 
+// right_rotate: 트리 우회전 함수
                                           // 우회전   x      <=         y
                                           //       / |               / |
 void right_rotate(rbtree *t, node_t *y) { //      a  y              x  c
@@ -190,6 +198,7 @@ void right_rotate(rbtree *t, node_t *y) { //      a  y              x  c
   y->parent = x;  // y의 parent를 x로 둔다. 
 }
 
+// inorder_tree_walk: 중위순회로 트리 값 출력 -> 오름차순으로 출력
 void inorder_tree_walk(rbtree *t, node_t *root) {
   if (root == t->nil) 
     return;
@@ -198,6 +207,7 @@ void inorder_tree_walk(rbtree *t, node_t *root) {
   inorder_tree_walk(t, root->right);
 }
 
+// rbtree_find: 트리에서 key 있는 지 탐색
 node_t *rbtree_find(const rbtree *t, const key_t key) {
   // TODO: implement find
   node_t *p = t->root;
@@ -216,6 +226,7 @@ node_t *rbtree_find(const rbtree *t, const key_t key) {
   return NULL;
 }
 
+// rbtree_min: RB tree 중 최소 값을 가진 node pointer 반환
 node_t *rbtree_min(const rbtree *t) {
   // TODO: implement find
   node_t *p = t->root;
@@ -227,6 +238,7 @@ node_t *rbtree_min(const rbtree *t) {
   return p;
 }
 
+// rbtree_max: RB tree 중 최대 값을 가진 node pointer 반환
 node_t *rbtree_max(const rbtree *t) {
   // TODO: implement find
   node_t *p = t->root;
@@ -238,6 +250,7 @@ node_t *rbtree_max(const rbtree *t) {
   return p;
 }
 
+// rbtree_erase: RB tree 내부의 ptr로 지정된 node를 삭제하고 메모리 반환
 int rbtree_erase(rbtree *t, node_t *p) {
   // TODO: implement erase
   // p : 삭제할 노드
@@ -292,7 +305,7 @@ int rbtree_erase(rbtree *t, node_t *p) {
   return 0;
 }
 
-// Successor가 Doubly Black인 경우를 해결하는 함수
+// rbtree_delete_fixup: Successor가 Doubly Black인 경우를 해결하는 함수
 void rbtree_delete_fixup(rbtree *t, node_t *x) {
   // x: successor
   // w: successor(x)의 형제
@@ -380,7 +393,7 @@ void rbtree_delete_fixup(rbtree *t, node_t *x) {
 }
 
 
-// 삭제하려는 노드의 값을 successor의 값으로 바꾸는 함수
+// rbtree_transplant: 삭제하려는 노드의 값을 successor의 값으로 바꾸는 함수
 void rbtree_transplant(rbtree *t, node_t *u, node_t *v) { // 삭제하려는 노드 u의 자리에 successor 노드 v의 값을 집어넣는 과정
   if (u->parent == t->nil)  {// 삭제하려는 노드가 루트인 경우
     t->root = v;
@@ -394,7 +407,7 @@ void rbtree_transplant(rbtree *t, node_t *u, node_t *v) { // 삭제하려는 노
   v->parent = u->parent;  // successor의 parent 설정
 }
 
-// p노드가 루트인 subtree에서 minimum 값을 찾는 함수
+// rbtree_minimum: p노드가 루트인 subtree에서 minimum 값을 찾는 함수
 node_t *rbtree_minimum(rbtree *t, node_t *p) {
   while (p->left != t->nil) {
     p = p->left;
@@ -402,6 +415,7 @@ node_t *rbtree_minimum(rbtree *t, node_t *p) {
   return p;
 }
 
+// rbtree_to_array: RB tree의 내용을 key 순서대로 주어진 array로 변환
 int rbtree_to_array(const rbtree *t, key_t *arr, const size_t n) {
   // TODO: implement to_array
   inorder_array(t, t->root, arr, n, 0);
@@ -409,6 +423,7 @@ int rbtree_to_array(const rbtree *t, key_t *arr, const size_t n) {
   return 0;
 }
 
+// inorder_array: inorder로 array에 key 순서대로 넣는 함수
 int inorder_array(const rbtree *t, node_t *root, key_t *arr, const size_t n, size_t i) {
   if (root == t->nil || i >= n)
     return i;
@@ -419,6 +434,6 @@ int inorder_array(const rbtree *t, node_t *root, key_t *arr, const size_t n, siz
   i++;
   ////
   i = inorder_array(t, root->right, arr, n, i);
-  
+
   return i;
 }
